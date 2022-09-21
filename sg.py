@@ -4,15 +4,54 @@ import numpy as np
 import argparse as ap
 import sys
 import os
+import struct
+
+# TODO(gromero): refactor
+def load_raw(filename):
+    # Raw file must have exactly 16000 PCM samples
+    fsize = os.stat(filename).st_size
+    # PCM 24-bit => 3 bytes
+    chunk_size = 3
+    chunks = fsize / chunk_size
+
+    fd = open(filename, "rb")
+
+    ff = []
+    d = fd.read(chunk_size)
+    print(d)
+    while d is not None and len(d) == 3:
+        # print(".")
+
+        da = bytearray(d)
+        da.insert(0, 0x00)
+        i = struct.unpack("<i", da)
+        f = float(i[0])
+        f = f / 0x80000000 # normalization factor from int -> float
+        ff.append(f)
+
+        d = fd.read(chunk_size)
+
+    ff = np.float32(ff)
+    return ff
 
 def main(args):
-    wav_file = args.input
+    filename = args.input
 
-    try:
-        ts, ts_size = librosa.load(wav_file, sr=16000)
+    _, ext = os.path.splitext(filename)
+    if ext == ".wav":
+        try:
+            ts, ts_size = librosa.load(filename, sr=16000)
 
-    except FileNotFoundError:
-        print(f"Could not find input wave file {wav_file}")
+        except FileNotFoundError:
+            print(f"Could not find input wave file {wav_file}")
+            sys.exit(1)
+
+    elif ext == ".raw":
+        ts = load_raw(filename)
+        ts_size = 16000
+
+    else:
+        print("Could not find file extension .wav or .raw, exiting...")
         sys.exit(1)
 
     ts_tensor = tf.convert_to_tensor(ts)
