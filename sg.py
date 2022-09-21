@@ -130,8 +130,8 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = ap.ArgumentParser(description="Obtain a 1x49x10x1 spectrogram from a .wav file")
-    parser.add_argument("input", help="A .wav file, 1 seconds @ 16 kHz, i.e. 16000 samples")
+    parser = ap.ArgumentParser(description="Obtain a 1x49x10x1 spectrogram from a .wav or raw PCM 24-bit file")
+    parser.add_argument("input", help="A .wav or .raw file, 1 seconds @ 16 kHz, i.e. 16000 samples")
     parser.add_argument("--output", help="Filename for the .npz output file", default="inputs.npz")
 
     args = parser.parse_args()
