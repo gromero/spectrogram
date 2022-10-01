@@ -71,7 +71,7 @@ def main(args):
 
     spectrograms = tf.abs(stfts) # compute magnitudes
 
-    print(stfts)
+    print("stfts = ", stfts)
     tf.print(spectrograms, summarize=-1)
     # stfts.shape = 512 (fft_length) // 2 + 1 = 257
     num_spectrogram_bins = stfts.shape[-1]
