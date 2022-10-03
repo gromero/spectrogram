@@ -34,6 +34,22 @@ def load_raw(filename):
     ff = np.float32(ff)
     return ff
 
+
+def mock_hann(*args, **kargs):
+    print("args = ", args)
+    print("kargs = ", kargs)
+    r = tf.signal.hann_window(*args, **kargs)
+    vv = r.numpy().tolist()
+
+    print("float hann_window = { ")
+    for i, v in enumerate(vv):
+        print("{:.25f}, ".format(v), end="")
+        if (i+1) % 4 == 0:
+            print("")
+    print("};")
+
+    return r
+
 def main(args):
     filename = args.input
 
@@ -67,7 +83,7 @@ def main(args):
     window_size_samples = 480   # 30 ms
     window_stride_samples = 320 # 20 ms
 
-    stfts = tf.signal.stft(time_series_samples, frame_length=window_size_samples, frame_step=window_stride_samples, fft_length=512, window_fn=tf.signal.hann_window)
+    stfts = tf.signal.stft(time_series_samples, frame_length=window_size_samples, frame_step=window_stride_samples, fft_length=512, window_fn=mock_hann)
 
     spectrograms = tf.abs(stfts) # compute magnitudes
 
